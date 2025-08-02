@@ -1,5 +1,7 @@
-import sdk from 'node-appwrite';
-import sharp from 'sharp';
+/* eslint-disable @typescript-eslint/no-require-imports */
+
+const sdk = require('node-appwrite');
+const sharp = require('sharp');
 
 module.exports = async function (req, res) {
   try {
@@ -13,14 +15,12 @@ module.exports = async function (req, res) {
     const { bucketId, fileId } = JSON.parse(req.payload);
 
     const file = await storage.getFileDownload(bucketId, fileId);
-
     const buffer = await file.arrayBuffer();
 
     const optimizedBuffer = await sharp(Buffer.from(buffer))
       .jpeg({ quality: 70 })
       .toBuffer();
 
-    // Upload the optimized image back to storage
     const uploadResp = await storage.createFile(
       bucketId,
       sdk.ID.unique(),
@@ -30,6 +30,6 @@ module.exports = async function (req, res) {
     res.json({ optimizedFileId: uploadResp.$id });
   } catch (error) {
     console.error('Compression function error:', error);
-    res.status(500).json({ error: error.message || 'An error occurred' });
+    res.json({ error: error.message || 'An error occurred' });
   }
-};
+}
