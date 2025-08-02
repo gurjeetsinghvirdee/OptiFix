@@ -40,7 +40,7 @@ export default function AuthForm({
 
     return (
         <div className='max-w-md mx-auto mt-20 p-6 bg-white rounded shadow'>
-            <h2 className='text-2xl mb-4 text-center'>
+            <h2 className='text-2xl mb-4 text-center text-black'>
                 {mode === 'login' ? 'Log In' : 'Sign Up'}
             </h2>
             <form onSubmit={handleSubmit} className='space-y-4'>
@@ -50,7 +50,7 @@ export default function AuthForm({
                     placeholder='Email'
                     value={email}
                     onChange={e => setEmail(e.target.value)}
-                    className='w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500' 
+                    className='w-full px-4 py-2 border rounded text-black focus:outline-none focus:ring-2 focus:ring-blue-500' 
                 />
                 <input 
                     type="password"
@@ -58,7 +58,7 @@ export default function AuthForm({
                     placeholder='Password'
                     value={password}
                     onChange={e => setPassword(e.target.value)}
-                    className='w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+                    className='w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 text-black focus:ring-blue-500'
                     minLength={8} 
                 />
 
@@ -76,7 +76,7 @@ export default function AuthForm({
             <p className='mt-4 text-center'>
                 {mode === 'login' ? (
                     <>
-                        Don&apos;t have an account?{' '}
+                        <span className='text-black'>Don&apos;t have an account?{' '}</span>
                         <button 
                             className='text-blue-600 underline' 
                             onClick={() => setMode('signup')}
@@ -86,7 +86,7 @@ export default function AuthForm({
                     </>
                 ) : (
                     <>
-                        Already have an account?{' '}
+                        <span className='text-black'>Already have an account?{' '}</span>
                         <button
                             className='text-blue-600 underline'
                             onClick={() => setMode('login')}
