@@ -1,3 +1,7 @@
+import sdk from 'node-appwrite';
+import sharp from 'sharp';
+import { Readable } from 'stream';
+
 module.exports = async function (req, res) {
   try {
     console.log('Function started - payload:', req.payload);
@@ -21,21 +25,33 @@ module.exports = async function (req, res) {
 
     console.log(`Received bucketId: ${bucketId}, fileId: ${fileId}`);
 
-    const file = await storage.getFileDownload(bucketId, fileId);
-    const buffer = await file.arrayBuffer();
+    const fileStream = await storage.getFileDownload(bucketId, fileId);
+    const chunks = [];
+    for await (const chunk of fileStream) {
+      chunks.push(chunk);
+    }
+    const buffer = Buffer.concat(chunks);
 
-    console.log('File downloaded, size:', buffer.byteLength);
+    console.log('File downloaded, size:', buffer.length);
 
-    const optimizedBuffer = await sharp(Buffer.from(buffer))
+    const optimizedBuffer = await sharp(buffer)
       .jpeg({ quality: 70 })
       .toBuffer();
 
     console.log('Image compressed, new size:', optimizedBuffer.length);
 
+    const stream = Readable.from(optimizedBuffer);
+    const fileObj = {
+      size: optimizedBuffer.length,
+      type: 'image/jpeg',
+      name: `compressed-${fileId}.jpg`,
+      stream,
+    };
+
     const uploadResp = await storage.createFile(
       bucketId,
       sdk.ID.unique(),
-      optimizedBuffer
+      fileObj
     );
 
     console.log('Optimized image uploaded, fileId:', uploadResp.$id);
